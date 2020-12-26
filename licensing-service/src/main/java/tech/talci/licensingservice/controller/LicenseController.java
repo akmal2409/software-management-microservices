@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import tech.talci.licensingservice.domain.License;
 import tech.talci.licensingservice.service.LicenseService;
 
+import java.util.Locale;
+
 @RestController
 @RequestMapping("/v1/organization/{organizationId}/license")
 public class LicenseController {
@@ -18,14 +20,14 @@ public class LicenseController {
     @GetMapping("/{licenseId}")
     public ResponseEntity<License> getLicense(@PathVariable String organizationId,
                                      @PathVariable String licenseId) {
-        License license = licenseService.getLicense(licenseId, organizationId);
-        return ResponseEntity.ok(license);
+        return ResponseEntity.ok(licenseService.getLicense(licenseId, organizationId));
     }
 
     @PostMapping
     public ResponseEntity<String> createLicense(@PathVariable String organizationId,
-                                                @RequestBody License license) {
-        return ResponseEntity.ok(licenseService.createLicense(license, organizationId));
+                                                @RequestBody License license,
+                                                @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+        return ResponseEntity.ok(licenseService.createLicense(license, organizationId, locale));
     }
 
     @PutMapping
