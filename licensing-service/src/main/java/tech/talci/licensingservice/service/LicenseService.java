@@ -21,7 +21,6 @@ public class LicenseService {
 
     public License getLicense(String licenseId, String organizationId) {
         License license = License.builder()
-                .id(new Random().nextInt(1000))
                 .licenseId(licenseId)
                 .organizationId(organizationId)
                 .description("Software product")

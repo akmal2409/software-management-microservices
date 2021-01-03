@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: licensing-service
+  profiles:
+    active: dev
+  cloud:
+    config:
+      name: licensing-service
+      uri: http://localhost:8071
+
+server:
+  port: 8081
