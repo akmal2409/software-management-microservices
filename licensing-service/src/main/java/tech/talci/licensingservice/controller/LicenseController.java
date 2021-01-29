@@ -8,10 +8,11 @@ import tech.talci.licensingservice.service.LicenseService;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/v1/organization/{organizationId}/license")
+@RequestMapping(LicenseController.BASE_URL)
 public class LicenseController {
 
     private final LicenseService licenseService;
+    public static final String BASE_URL = "/api/organization/{organizationId}/license";
 
     public LicenseController(LicenseService licenseService) {
         this.licenseService = licenseService;

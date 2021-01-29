@@ -1,6 +1,5 @@
 package tech.talci.licensingservice.domain;
 
-import com.sun.istack.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

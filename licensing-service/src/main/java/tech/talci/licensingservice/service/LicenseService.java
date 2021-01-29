@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tech.talci.licensingservice.controller.LicenseController;
 import tech.talci.licensingservice.domain.License;
+import tech.talci.licensingservice.exceptions.ResourceNotFoundException;
+import tech.talci.licensingservice.repositories.LicenseRepository;
 
 import java.util.Locale;
-import java.util.Random;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -18,15 +19,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class LicenseService {
 
     private final MessageSource messages;
+    private final LicenseRepository licenseRepository;
 
     public License getLicense(String licenseId, String organizationId) {
-        License license = License.builder()
-                .licenseId(licenseId)
-                .organizationId(organizationId)
-                .description("Software product")
-                .productName("Ostock")
-                .licenseType("full")
-                .build();
+        License license = licenseRepository.findLicenseByOrganizationIdAndLicenseId(organizationId,
+                licenseId)
+                .orElseThrow(() -> new ResourceNotFoundException("License was not found!"));
+
+
         license.add(
                 linkTo(methodOn(LicenseController.class)
                         .getLicense(organizationId, license.getLicenseId())).withSelfRel(),
