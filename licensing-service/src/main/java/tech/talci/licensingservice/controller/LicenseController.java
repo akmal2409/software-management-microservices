@@ -1,40 +1,37 @@
 package tech.talci.licensingservice.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import tech.talci.licensingservice.domain.License;
+import tech.talci.licensingservice.model.License;
 import tech.talci.licensingservice.service.LicenseService;
 
-import java.util.Locale;
-
-@RestController
-@RequestMapping(LicenseController.BASE_URL)
+@Controller
+@RequestMapping(value = LicenseController.BASE_URL)
+@RequiredArgsConstructor
 public class LicenseController {
 
+    public static final String BASE_URL = "/api/v1/organization/{organizationId}/license";
     private final LicenseService licenseService;
-    public static final String BASE_URL = "/api/organization/{organizationId}/license";
-
-    public LicenseController(LicenseService licenseService) {
-        this.licenseService = licenseService;
-    }
 
     @GetMapping("/{licenseId}")
     public ResponseEntity<License> getLicense(@PathVariable String organizationId,
-                                     @PathVariable String licenseId) {
-        return ResponseEntity.ok(licenseService.getLicense(licenseId, organizationId));
-    }
-
-    @PostMapping
-    public ResponseEntity<String> createLicense(@PathVariable String organizationId,
-                                                @RequestBody License license,
-                                                @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
-        return ResponseEntity.ok(licenseService.createLicense(license, organizationId, locale));
+                                              @PathVariable String licenseId) {
+        License license = licenseService.getLicense(licenseId, organizationId);
+        return ResponseEntity.ok(license);
     }
 
     @PutMapping
     public ResponseEntity<String> updateLicense(@PathVariable String organizationId,
                                                 @RequestBody License license) {
         return ResponseEntity.ok(licenseService.updateLicense(license, organizationId));
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createLicense(@PathVariable String organizationId,
+                                                @RequestBody License license) {
+        return ResponseEntity.ok(licenseService.createLicense(license, organizationId));
     }
 
     @DeleteMapping("/{licenseId}")
