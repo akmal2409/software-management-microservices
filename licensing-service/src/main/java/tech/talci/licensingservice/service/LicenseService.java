@@ -2,11 +2,12 @@ package tech.talci.licensingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import tech.talci.licensingservice.config.ServiceConfig;
 import tech.talci.licensingservice.controller.LicenseController;
 import tech.talci.licensingservice.model.License;
+import tech.talci.licensingservice.repository.LicenseRepository;
 
-import java.util.Random;
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -15,54 +16,69 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class LicenseService {
 
+    private final LicenseRepository licenseRepository;
+    private final ServiceConfig serviceConfig;
+
     public License getLicense(String licenseId, String organizationId) {
-        License license = License.builder()
-                .id(new Random().nextLong())
-                .licenseId(licenseId)
-                .organizationId(organizationId)
-                .description("Software Product")
-                .productName("TalciSoftware")
-                .licenseType("full")
-                .build();
+        License license = licenseRepository
+                .findByOrganizationIdAndLicenseId(licenseId, organizationId)
+                .orElseThrow(() -> new IllegalArgumentException("License with " +
+                        licenseId + " id was not found for a given organization ID: "
+                        + organizationId));
+
 
         license.add(
                 linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId()))
-                .withSelfRel(),
-                linkTo(methodOn(LicenseController.class).createLicense(organizationId, license))
-                .withRel("createLicense"),
-                linkTo(methodOn(LicenseController.class).updateLicense(organizationId, license))
+                        .withSelfRel(),
+                linkTo(methodOn(LicenseController.class).createLicense(license))
+                        .withRel("createLicense"),
+                linkTo(methodOn(LicenseController.class).updateLicense(license))
                         .withRel("updateLicense"),
-                linkTo(methodOn(LicenseController.class).deleteLicense(organizationId, license.getLicenseId()))
-                .withRel("deleteLicense")
+                linkTo(methodOn(LicenseController.class).deleteLicense(license.getLicenseId()))
+                        .withRel("deleteLicense")
         );
 
-        return license;
+        return license.withComment(serviceConfig.getExampleProperty());
     }
 
-    public String createLicense(License license, String organizationId) {
-        String responseMessage = null;
-        if(!StringUtils.isEmpty(license)) {
-            license.setOrganizationId(organizationId);
-            responseMessage = String.format("This is the post and the object is: %s", license.toString());
-        }
+    public License createLicense(License license) {
+        license.setLicenseId(UUID.randomUUID().toString());
+        licenseRepository.save(license);
 
-        return responseMessage;
+        license.add(
+                linkTo(methodOn(LicenseController.class).createLicense(license)).withSelfRel(),
+                linkTo(methodOn(LicenseController.class)
+                        .getLicense(license.getOrganizationId(), license.getLicenseId()))
+                        .withRel("getLicense"),
+                linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
+                linkTo(methodOn(LicenseController.class).deleteLicense(
+                        license.getLicenseId())).withRel("deleteLicense")
+        );
+
+        return license.withComment(serviceConfig.getExampleProperty());
     }
 
-    public String updateLicense(License license, String organizationId) {
-        String responseMessage = null;
-        if (!StringUtils.isEmpty(license)) {
-            license.setOrganizationId(organizationId);
-            responseMessage = String.format("This is the put and the object is: %s", license.toString());
-        }
+    public License updateLicense(License license) {
+        licenseRepository.save(license);
 
-        return responseMessage;
+        license.add(
+                linkTo(methodOn(LicenseController.class).createLicense(license)).withRel("createLicense"),
+                linkTo(methodOn(LicenseController.class)
+                        .getLicense(license.getOrganizationId(), license.getLicenseId()))
+                        .withRel("getLicense"),
+                linkTo(methodOn(LicenseController.class).updateLicense(license)).withSelfRel(),
+                linkTo(methodOn(LicenseController.class).deleteLicense(
+                        license.getLicenseId())).withRel("deleteLicense")
+        );
+
+        return license.withComment(serviceConfig.getExampleProperty());
     }
 
-    public String deleteLicense(String licenseId, String organizationId) {
-        String responseMessage = null;
-        responseMessage = String.format("Deleting license with id %s for the organization %s",
-                licenseId, organizationId);
-        return responseMessage;
+    public String deleteLicense(String licenseId) {
+        licenseRepository.deleteById(licenseId);
+
+        return String.format("Deleting license with id %s for the organization",
+                licenseId);
     }
+
 }

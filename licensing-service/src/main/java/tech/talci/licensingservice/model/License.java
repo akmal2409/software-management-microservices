@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "licenses")
 public class License extends RepresentationModel<License> {
 
@@ -23,6 +24,11 @@ public class License extends RepresentationModel<License> {
     private String licenseType;
     @Column(name = "comment")
     private String comment;
+
+    public License withComment(String comment) {
+        this.comment = comment;
+        return this;
+    }
 
     public static Builder builder() {
         return new Builder();
