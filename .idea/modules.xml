@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/config-server/config-server.iml" filepath="$PROJECT_DIR$/config-server/config-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eureka-server/eureka-server.iml" filepath="$PROJECT_DIR$/eureka-server/eureka-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/licensing-service/licensing-service.iml" filepath="$PROJECT_DIR$/licensing-service/licensing-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/organization-service/organization-service.iml" filepath="$PROJECT_DIR$/organization-service/organization-service.iml" />
     </modules>
   </component>
 </project>
