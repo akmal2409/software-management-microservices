@@ -15,10 +15,11 @@ public class LicenseController {
     public static final String BASE_URL = "/api/v1/organization/{organizationId}/license";
     private final LicenseService licenseService;
 
-    @GetMapping("/{licenseId}")
+    @GetMapping("/{licenseId}/{clientType}")
     public ResponseEntity<License> getLicense(@PathVariable String organizationId,
-                                              @PathVariable String licenseId) {
-        License license = licenseService.getLicense(licenseId, organizationId);
+                                              @PathVariable String licenseId,
+                                              @PathVariable String clientType) {
+        License license = licenseService.getLicense(licenseId, organizationId, clientType);
         return ResponseEntity.ok(license);
     }
 

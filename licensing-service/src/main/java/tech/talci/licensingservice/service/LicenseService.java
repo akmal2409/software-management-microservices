@@ -19,7 +19,7 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
     private final ServiceConfig serviceConfig;
 
-    public License getLicense(String licenseId, String organizationId) {
+    public License getLicense(String licenseId, String organizationId, String clientType) {
         License license = licenseRepository
                 .findByOrganizationIdAndLicenseId(licenseId, organizationId)
                 .orElseThrow(() -> new IllegalArgumentException("License with " +
@@ -28,7 +28,7 @@ public class LicenseService {
 
 
         license.add(
-                linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId()))
+                linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId(), clientType))
                         .withSelfRel(),
                 linkTo(methodOn(LicenseController.class).createLicense(license))
                         .withRel("createLicense"),
@@ -48,7 +48,7 @@ public class LicenseService {
         license.add(
                 linkTo(methodOn(LicenseController.class).createLicense(license)).withSelfRel(),
                 linkTo(methodOn(LicenseController.class)
-                        .getLicense(license.getOrganizationId(), license.getLicenseId()))
+                        .getLicense(license.getOrganizationId(), license.getLicenseId(), "feign"))
                         .withRel("getLicense"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(
@@ -64,7 +64,7 @@ public class LicenseService {
         license.add(
                 linkTo(methodOn(LicenseController.class).createLicense(license)).withRel("createLicense"),
                 linkTo(methodOn(LicenseController.class)
-                        .getLicense(license.getOrganizationId(), license.getLicenseId()))
+                        .getLicense(license.getOrganizationId(), license.getLicenseId(), "feign"))
                         .withRel("getLicense"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withSelfRel(),
                 linkTo(methodOn(LicenseController.class).deleteLicense(
