@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import tech.talci.licensingservice.model.License;
 import tech.talci.licensingservice.service.LicenseService;
 
+import java.util.List;
+
 @Controller
 @RequestMapping(value = LicenseController.BASE_URL)
 @RequiredArgsConstructor
@@ -21,6 +23,11 @@ public class LicenseController {
                                               @PathVariable String clientType) {
         License license = licenseService.getLicense(licenseId, organizationId, clientType);
         return ResponseEntity.ok(license);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<License>> findAll() {
+        return ResponseEntity.ok(licenseService.findAll());
     }
 
     @PutMapping

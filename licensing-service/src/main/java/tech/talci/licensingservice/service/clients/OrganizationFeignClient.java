@@ -11,7 +11,7 @@ public interface OrganizationFeignClient {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/v1/organization/{organizationId}",
+            value = "/api/v1/organization/{organizationId}",
             consumes = "application/json"
     )
     Organization getOrganization(@PathVariable("organizationId") String organizationId);
