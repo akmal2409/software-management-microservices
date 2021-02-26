@@ -8,6 +8,7 @@ import tech.talci.licensingservice.controller.LicenseController;
 import tech.talci.licensingservice.model.License;
 import tech.talci.licensingservice.model.Organization;
 import tech.talci.licensingservice.repository.LicenseRepository;
+import tech.talci.licensingservice.service.clients.OrganizationDiscoveryClient;
 import tech.talci.licensingservice.service.clients.OrganizationFeignClient;
 import tech.talci.licensingservice.service.clients.OrganizationRestTemplateClient;
 
@@ -25,16 +26,24 @@ public class LicenseService {
     private final LicenseRepository licenseRepository;
     private final ServiceConfig serviceConfig;
     private final OrganizationFeignClient feignClient;
+    private final OrganizationDiscoveryClient discoveryClient;
     private final OrganizationRestTemplateClient restTemplateClient;
 
     public License getLicense(String licenseId, String organizationId, String clientType) {
         License license = licenseRepository
-                .findByOrganizationIdAndLicenseId(licenseId, organizationId)
+                .findByOrganizationIdAndLicenseId(organizationId, licenseId)
                 .orElseThrow(() -> new IllegalArgumentException("License with " +
                         licenseId + " id was not found for a given organization ID: "
                         + organizationId));
 
         Organization organization = getOrganizationInfo(organizationId, clientType);
+
+        if (organization != null) {
+            license.setContactEmail(organization.getContactEmail());
+            license.setContactPhone(organization.getContactPhone());
+            license.setContactName(organization.getContactName());
+            license.setOrganizationName(organization.getName());
+        }
 
         license.add(
                 linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId(), clientType))
@@ -62,6 +71,9 @@ public class LicenseService {
                 log.info("I am using rest client");
                 organization = restTemplateClient.getOrganization(organizationId);
                 break;
+            case "discovery":
+                log.info("I am using discovery client");
+                organization = discoveryClient.getOrganization(organizationId);
             default:
                 organization = feignClient.getOrganization(organizationId);
         }

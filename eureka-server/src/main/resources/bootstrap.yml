@@ -4,6 +4,12 @@ spring:
   cloud:
     config:
       uri: http://localhost:8071
+    inetutils:
+      ignored-interfaces:
+        - docker
+        - eth.*
+      preferred-networks:
+        - 10.0.0
 server:
   port: 8070
 

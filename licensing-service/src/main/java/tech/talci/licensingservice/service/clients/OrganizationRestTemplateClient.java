@@ -22,4 +22,5 @@ public class OrganizationRestTemplateClient {
                         null, Organization.class, organizationId);
         return restExchange.getBody();
     }
+    
 }
