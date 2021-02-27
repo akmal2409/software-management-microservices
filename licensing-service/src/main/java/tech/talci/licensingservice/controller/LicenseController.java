@@ -18,7 +18,7 @@ public class LicenseController {
     private final LicenseService licenseService;
 
     @GetMapping("/{licenseId}/{clientType}")
-    public ResponseEntity<License> getLicense(@PathVariable("organizationId") String organizationId,
+    public ResponseEntity<License> getLicense(@PathVariable String organizationId,
                                               @PathVariable String licenseId,
                                               @PathVariable String clientType) {
         License license = licenseService.getLicense(licenseId, organizationId, clientType);
@@ -26,10 +26,10 @@ public class LicenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<License>> findAll() {
-        return ResponseEntity.ok(licenseService.findAll());
+    public ResponseEntity<List<License>> getByOrganizationId(@PathVariable String organizationId) {
+        return ResponseEntity
+                .ok(licenseService.getLicensesByOrganizationId(organizationId));
     }
-
     @PutMapping
     public ResponseEntity<License> updateLicense(@RequestBody License license) {
         return ResponseEntity.ok(licenseService.updateLicense(license));

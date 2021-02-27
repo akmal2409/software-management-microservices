@@ -1,5 +1,7 @@
 package tech.talci.licensingservice.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,9 @@ import tech.talci.licensingservice.service.clients.OrganizationDiscoveryClient;
 import tech.talci.licensingservice.service.clients.OrganizationFeignClient;
 import tech.talci.licensingservice.service.clients.OrganizationRestTemplateClient;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -50,6 +54,8 @@ public class LicenseService {
                         .withSelfRel(),
                 linkTo(methodOn(LicenseController.class).createLicense(license))
                         .withRel("createLicense"),
+                linkTo(methodOn(LicenseController.class).getByOrganizationId(organizationId))
+                        .withRel("getByOrganizationId"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license))
                         .withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(license.getLicenseId()))
@@ -57,6 +63,49 @@ public class LicenseService {
         );
 
         return license.withComment(serviceConfig.getExampleProperty());
+    }
+
+    //    @HystrixCommand(commandProperties = {
+//            @HystrixProperty(
+//                    name = "execution.isolation.thread.timeoutInMilliseconds",
+//                    value = "12000"
+//            )
+//    })
+    @HystrixCommand(fallbackMethod = "buildFallbackLicenseList",
+                threadPoolKey = "licenseByOrganizationThreadPool",
+                threadPoolProperties = {
+                        @HystrixProperty(name= "coreSize", value = "30"),
+                        @HystrixProperty(name = "maxQueueSize", value = "10")
+                })
+    public List<License> getLicensesByOrganizationId(String organizationId) {
+        randomlyRunLong();
+        return licenseRepository.findByOrganizationId(organizationId);
+    }
+
+    private List<License> buildFallbackLicenseList(String organizationId) {
+        License license = License.builder()
+                .licenseId("000000-000-000")
+                .organizationId(organizationId)
+                .productName("Sorry no licensing information currently available")
+                .build();
+
+        return Collections.singletonList(license);
+    }
+
+    private void randomlyRunLong() {
+        Random rand = new Random();
+        int randNum = rand.nextInt((3 - 1) + 1) + 1;
+        if (randNum == 3) {
+            sleep();
+        }
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(11000);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
     }
 
     private Organization getOrganizationInfo(String organizationId, String clientType) {
@@ -90,6 +139,8 @@ public class LicenseService {
                 linkTo(methodOn(LicenseController.class)
                         .getLicense(license.getOrganizationId(), license.getLicenseId(), "feign"))
                         .withRel("getLicense"),
+                linkTo(methodOn(LicenseController.class).getByOrganizationId(license.getOrganizationId()))
+                        .withRel("getByOrganizationId"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(
                         license.getLicenseId())).withRel("deleteLicense")
@@ -106,6 +157,8 @@ public class LicenseService {
                 linkTo(methodOn(LicenseController.class)
                         .getLicense(license.getOrganizationId(), license.getLicenseId(), "feign"))
                         .withRel("getLicense"),
+                linkTo(methodOn(LicenseController.class).getByOrganizationId(license.getOrganizationId()))
+                        .withRel("getByOrganizationId"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withSelfRel(),
                 linkTo(methodOn(LicenseController.class).deleteLicense(
                         license.getLicenseId())).withRel("deleteLicense")
