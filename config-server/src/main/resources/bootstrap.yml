@@ -2,7 +2,7 @@ spring:
   application:
     name: config-server
   profiles:
-    active: native, git
+    active: native
 # vault
 
   cloud:
