@@ -13,6 +13,7 @@ import tech.talci.licensingservice.repository.LicenseRepository;
 import tech.talci.licensingservice.service.clients.OrganizationDiscoveryClient;
 import tech.talci.licensingservice.service.clients.OrganizationFeignClient;
 import tech.talci.licensingservice.service.clients.OrganizationRestTemplateClient;
+import tech.talci.licensingservice.utils.UserContextHolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -72,12 +73,10 @@ public class LicenseService {
 //            )
 //    })
     @HystrixCommand(fallbackMethod = "buildFallbackLicenseList",
-                threadPoolKey = "licenseByOrganizationThreadPool",
-                threadPoolProperties = {
-                        @HystrixProperty(name= "coreSize", value = "30"),
-                        @HystrixProperty(name = "maxQueueSize", value = "10")
-                })
+                threadPoolKey = "getLicencesServiceThreadPool",
+                commandKey = "getLicensesCommand")
     public List<License> getLicensesByOrganizationId(String organizationId) {
+        log.debug("getLicenseByOrganization Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
     }
