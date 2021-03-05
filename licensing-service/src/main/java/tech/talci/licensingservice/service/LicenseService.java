@@ -55,7 +55,7 @@ public class LicenseService {
                         .withSelfRel(),
                 linkTo(methodOn(LicenseController.class).createLicense(license))
                         .withRel("createLicense"),
-                linkTo(methodOn(LicenseController.class).getByOrganizationId(organizationId))
+                linkTo(methodOn(LicenseController.class).getLicenses(organizationId))
                         .withRel("getByOrganizationId"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license))
                         .withRel("updateLicense"),
@@ -138,7 +138,7 @@ public class LicenseService {
                 linkTo(methodOn(LicenseController.class)
                         .getLicense(license.getOrganizationId(), license.getLicenseId(), "feign"))
                         .withRel("getLicense"),
-                linkTo(methodOn(LicenseController.class).getByOrganizationId(license.getOrganizationId()))
+                linkTo(methodOn(LicenseController.class).getLicenses(license.getOrganizationId()))
                         .withRel("getByOrganizationId"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(
@@ -156,7 +156,7 @@ public class LicenseService {
                 linkTo(methodOn(LicenseController.class)
                         .getLicense(license.getOrganizationId(), license.getLicenseId(), "feign"))
                         .withRel("getLicense"),
-                linkTo(methodOn(LicenseController.class).getByOrganizationId(license.getOrganizationId()))
+                linkTo(methodOn(LicenseController.class).getLicenses(license.getOrganizationId()))
                         .withRel("getByOrganizationId"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withSelfRel(),
                 linkTo(methodOn(LicenseController.class).deleteLicense(

@@ -1,17 +1,21 @@
 package tech.talci.licensingservice.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tech.talci.licensingservice.model.License;
 import tech.talci.licensingservice.service.LicenseService;
+import tech.talci.licensingservice.utils.UserContext;
+import tech.talci.licensingservice.utils.UserContextHolder;
 
 import java.util.List;
 
 @Controller
 @RequestMapping(value = LicenseController.BASE_URL)
 @RequiredArgsConstructor
+@Slf4j
 public class LicenseController {
 
     public static final String BASE_URL = "/api/v1/organization/{organizationId}/license";
@@ -26,7 +30,8 @@ public class LicenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<License>> getByOrganizationId(@PathVariable String organizationId) {
+    public ResponseEntity<List<License>> getLicenses(@PathVariable String organizationId) {
+        log.debug("License Service Controller Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
         return ResponseEntity
                 .ok(licenseService.getLicensesByOrganizationId(organizationId));
     }

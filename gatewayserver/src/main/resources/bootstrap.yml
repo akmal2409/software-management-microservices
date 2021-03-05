@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: "gateway-server"
+  cloud:
+    config:
+      uri: http://localhost:8071
+
+logging:
+  level:
+    com.netflix: WARN
+    org.spring.framework.web: WARN
+    tech.tacli: DEBUG
+
+
