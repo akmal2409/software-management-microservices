@@ -13,3 +13,6 @@ spring:
       ignoredInterfaces:
         - docker0
         - veth.*
+logging:
+  level:
+    tech.talci: DEBUG

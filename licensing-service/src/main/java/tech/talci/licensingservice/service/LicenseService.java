@@ -42,7 +42,7 @@ public class LicenseService {
                         + organizationId));
 
         Organization organization = getOrganizationInfo(organizationId, clientType);
-
+        log.info("Organization " + organization);
         if (organization != null) {
             license.setContactEmail(organization.getContactEmail());
             license.setContactPhone(organization.getContactPhone());
